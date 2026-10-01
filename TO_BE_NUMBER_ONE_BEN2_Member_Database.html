@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฐานข้อมูลสมาชิก to be number ben2 โรงเรียนเบญจมราชรังสฤษฎิ์ ๒</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#003366',
+                            yellow: '#FFD700',
+                            darkblue: '#002244',
+                            lightyellow: '#FFF8DC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 h-full text-slate-800 flex flex-col justify-between">
+
+    <div>
+        <header class="bg-brand-blue text-white shadow-lg sticky top-0 z-50 border-b-4 border-brand-yellow">
+            <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-3 text-center sm:text-left">
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold tracking-tight text-brand-yellow">ฐานข้อมูลสมาชิก to be number ben2</h1>
+                        <p class="text-xs sm:text-sm text-slate-200">โรงเรียนเบญจมราชรังสฤษฎิ์ ๒</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="switchTab('members')" id="tabBtnMembers" class="px-4 py-2 rounded-xl text-sm font-semibold bg-brand-yellow text-brand-blue shadow transition">
+                        <i class="fa-solid fa-users mr-1.5"></i> รายชื่อสมาชิก
+                    </button>
+                    <button onclick="switchTab('files')" id="tabBtnFiles" class="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-900/60 text-slate-200 hover:bg-blue-800 transition">
+                        <i class="fa-solid fa-folder-open mr-1.5"></i> คลังไฟล์
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="bg-amber-100 border-b border-amber-200 text-amber-900 px-4 py-3 text-center text-xs sm:text-sm font-medium shadow-inner flex items-center justify-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+            <span>เว็บไซต์นี้รวบรวมข้อมูลทิ้งไว้ในระบบเมื่อ 30 ธันวาคม 2567 และจะไม่อัพเดตข้อมูลอีกต่อไป</span>
+        </div>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+            
+            <!-- Tab 1: Members Database -->
+            <div id="sectionMembers" class="space-y-6">
+                <!-- Search Box -->
+                <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-4 justify-between items-center">
+                    <div class="relative w-full">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                            <i class="fa-solid fa-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="ค้นหารายชื่อสมาชิก, ฝ่าย, ตำแหน่ง หรือปีการศึกษา..." 
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                    </div>
+                    <div class="text-xs text-slate-500 whitespace-nowrap">
+                        พบข้อมูลทั้งหมด <span id="totalCount" class="font-bold text-brand-blue">0</span> รายการ
+                    </div>
+                </div>
+
+                <!-- Members Table -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs uppercase font-bold tracking-wider">
+                                    <th class="py-4 px-6 w-16 text-center">#</th>
+                                    <th class="py-4 px-6">ชื่อ - สกุล</th>
+                                    <th class="py-4 px-6">ฝ่ายงาน</th>
+                                    <th class="py-4 px-6">ตำแหน่ง</th>
+                                    <th class="py-4 px-6 text-center">ปีการศึกษา</th>
+                                </tr>
+                            </thead>
+                            <tbody id="memberTableBody" class="divide-y divide-slate-100 text-sm text-slate-700">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Empty State -->
+                    <div id="emptyState" class="hidden py-16 text-center">
+                        <div class="text-slate-300 text-5xl mb-3"><i class="fa-solid fa-circle-exclamation"></i></div>
+                        <p class="text-slate-500 font-medium">ไม่พบรายชื่อที่ค้นหาในระบบ</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: File Archive -->
+            <div id="sectionFiles" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold text-brand-blue mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-box-archive"></i> คลังไฟล์เอกสารชมรม (Archive Files)
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mb-6">รวบรวมเอกสาร แบบฟอร์ม และบันทึกข้อความสำคัญของชมรม TO BE NUMBER ONE BEN2 ประจำปีการศึกษา 2567</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- File Item 1 -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">ระเบียบปฏิบัติและโครงสร้างชมรม.pdf</h4>
+                                    <p class="text-xs text-slate-400">ขนาดไฟล์: 2.4 MB • อัปเดตเมื่อ 30 ธ.ค. 2567</p>
+                                </div>
+                            </div>
+                            <button onclick="downloadFile('ระเบียบปฏิบัติและโครงสร้างชมรม.pdf')" class="px-3.5 py-2 bg-brand-blue hover:bg-brand-darkblue text-white rounded-lg text-xs font-semibold shadow transition whitespace-nowrap">
+                                <i class="fa-solid fa-download mr-1"></i> ดาวน์โหลด
+                            </button>
+                        </div>
+
+                        <!-- File Item 2 -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-file-excel"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">ฐานข้อมูลสมาชิกทั้งหมด_2567.xlsx</h4>
+                                    <p class="text-xs text-slate-400">ขนาดไฟล์: 1.1 MB • อัปเดตเมื่อ 30 ธ.ค. 2567</p>
+                                </div>
+                            </div>
+                            <button onclick="downloadFile('ฐานข้อมูลสมาชิกทั้งหมด_2567.xlsx')" class="px-3.5 py-2 bg-brand-blue hover:bg-brand-darkblue text-white rounded-lg text-xs font-semibold shadow transition whitespace-nowrap">
+                                <i class="fa-solid fa-download mr-1"></i> ดาวน์โหลด
+                            </button>
+                        </div>
+
+                        <!-- File Item 3 -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-file-word"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">แบบฟอร์มใบสมัครสมาชิกชมรม.docx</h4>
+                                    <p class="text-xs text-slate-400">ขนาดไฟล์: 850 KB • อัปเดตเมื่อ 30 ธ.ค. 2567</p>
+                                </div>
+                            </div>
+                            <button onclick="downloadFile('แบบฟอร์มใบสมัครสมาชิกชมรม.docx')" class="px-3.5 py-2 bg-brand-blue hover:bg-brand-darkblue text-white rounded-lg text-xs font-semibold shadow transition whitespace-nowrap">
+                                <i class="fa-solid fa-download mr-1"></i> ดาวน์โหลด
+                            </button>
+                        </div>
+
+                        <!-- File Item 4 -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-file-zipper"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">รูปภาพกิจกรรมและเกียรติบัตร.zip</h4>
+                                    <p class="text-xs text-slate-400">ขนาดไฟล์: 18.5 MB • อัปเดตเมื่อ 30 ธ.ค. 2567</p>
+                                </div>
+                            </div>
+                            <button onclick="downloadFile('รูปภาพกิจกรรมและเกียรติบัตร.zip')" class="px-3.5 py-2 bg-brand-blue hover:bg-brand-darkblue text-white rounded-lg text-xs font-semibold shadow transition whitespace-nowrap">
+                                <i class="fa-solid fa-download mr-1"></i> ดาวน์โหลด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="bg-brand-darkblue text-white border-t border-blue-900 py-6 text-center text-xs text-slate-400 mt-12">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p class="font-semibold text-slate-200">ฐานข้อมูลสมาชิก to be number ben2 โรงเรียนเบญจมราชรังสฤษฎิ์ ๒</p>
+            <p>เว็บไซต์นี้รวบรวมข้อมูลทิ้งไว้ในระบบเมื่อ 30 ธันวาคม 2567 และจะไม่อัพเดตข้อมูลอีกต่อไป</p>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 text-sm">
+        <i class="fa-solid fa-circle-info text-brand-yellow"></i>
+        <span id="toastMessage">ดาวน์โหลดไฟล์สำเร็จ</span>
+    </div>
+
+    <script>
+        // Official database records (76 items)
+        const membersData = [
+            { id: 1, name: "นายณัฐนนท์ แซ่เอี๊ยบ", year: "2567", dept: "ยังไมีมีฝ่าย หรือ เป็น ประธาน เลขา รองประธาน ผู้ช่วยเลขา", pos: "ผู้ช่วยเลขา" },
+            { id: 2, name: "เกณิกา พุ่มพวง", year: "2567", dept: "ฝ่ายเรื่องราวร้องทุกข์และบริหารจัดการ", pos: "หัวหน้าฝ่าย" },
+            { id: 3, name: "สาวิตรี ทรัพย์รักษา", year: "2567", dept: "ฝ่ายเรื่องราวร้องทุกข์และบริหารจัดการ", pos: "สมาชิกฝ่าย" },
+            { id: 4, name: "สุกัญญา สอาดเทียม", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 5, name: "ด.ชภาสกร นิติการ", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 6, name: "น.ส.ณัฐณิชา พรนิติพล", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 7, name: "ศาริศา กุลนภาดล", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 8, name: "นายณัฐภูมิ บุญเขียน", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "หัวหน้าฝ่าย" },
+            { id: 9, name: "ธันวา ผ่องอักษร", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 10, name: "นายอรรณพ นิลสวัสดิ์", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 11, name: "นายณัฐพล ดำรงสุสกุล", year: "2567", dept: "ฝ่ายเรื่องราวร้องทุกข์และบริหารจัดการ", pos: "สมาชิกฝ่าย" },
+            { id: 12, name: "ชัญญานุช วงษ์แก้ว", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 13, name: "(กรรมการบริหาร)", year: "2567", dept: "ยังไมีมีฝ่าย หรือ เป็น ประธาน เลขา รองประธาน ผู้ช่วยเลขา", pos: "รองประธาน" },
+            { id: 14, name: "น.ส.ชนม์นิภา พวงจันทร์", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "หัวหน้าฝ่าย" },
+            { id: 15, name: "ปภาวรินท์ เกษศิริ", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 16, name: "พิชิตชัย ศรีทราชัย", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 17, name: "นาย ศิวพัฒน์ อุดมศรี", year: "2567", dept: "ฝ่ายการจัดหากองทุน", pos: "สมาชิกฝ่าย" },
+            { id: 18, name: "จิรภัทร ศรีวงกต", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 19, name: "น.ส.อรอมล ตันเจริญ", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "รองประธาน" },
+            { id: 20, name: "ชนม์นิภา พวงจันทร์", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "หัวหน้าฝ่าย" },
+            { id: 21, name: "ด.ช.ภทรดนัย คันธะมาตย์", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 22, name: "ด.ช.ธนัตถ์พล ประพฤติธรรม", year: "2567", dept: "ฝ่ายการจัดหากองทุน", pos: "สมาชิกฝ่าย" },
+            { id: 23, name: "ด.ญ.นพัชญ์ ใจงาม", year: "2567", dept: "ฝ่ายการจัดหากองทุน", pos: "สมาชิกฝ่าย" },
+            { id: 24, name: "พิขา เข็มเพชร", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 25, name: "ด.ญ.สุกัญญา สอาดเทียม", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 26, name: "ด.ญ.กฤตพร อุดรมิตร", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 27, name: "ด.ญ.อัญญเรศ ฉัตรทอง", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 28, name: "พัชรีวรรณ ศิลาภรพรรณ", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 29, name: "ด.ญ ปาริชาติ ถาวรศิลป์", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 30, name: "ด.ช.เทวกร ทาออน", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 31, name: "กัญญาพัชร ขอสุข", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 32, name: "เด็กหญิงศิศิรา นาเมืองรักษ์", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 33, name: "ด.ช.รัฐชานนท์ ผงกุลา", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 34, name: "ด.ญ. รมิค่า สวัสดี", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 35, name: "พริมา. พลาเลิศ", year: "2567", dept: "ฝ่ายการจัดหากองทุน", pos: "สมาชิกฝ่าย" },
+            { id: 36, name: "น.ส.ญาณิศา บุญสุข", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 37, name: "น.ส.ณัฏฐนิกานต์ พรหมเจริญ", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 38, name: "ปรายฟ้า ถาวรโชติ", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 39, name: "น.ส. พรีมลดา โกประเวศ", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 40, name: "ธนาเดช หรุ่มวิสัย", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 41, name: "นางสาววริศรา เทพโยทา", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 42, name: "กานต์พิชชา ขวัญยัง", year: "2567", dept: "ฝ่ายเรื่องราวร้องทุกข์และบริหารจัดการ", pos: "สมาชิกฝ่าย" },
+            { id: 43, name: "น.ส.สาวิตรี ทรัพย์รักษา", year: "2567", dept: "ฝ่ายการจัดหากองทุน", pos: "สมาชิกฝ่าย" },
+            { id: 44, name: "ชนม์นิภา พวงจันทร์", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "หัวหน้าฝ่าย" },
+            { id: 45, name: "ณัฐณิชา ทองประเสริฐ", year: "2567", dept: "ฝ่ายเรื่องราวร้องทุกข์และบริหารจัดการ", pos: "สมาชิกฝ่าย" },
+            { id: 46, name: "นายอรรณพ นิลสวัสดิ์", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 47, name: "เกณิกา พุ่มพวง", year: "2567", dept: "ฝ่ายเรื่องราวร้องทุกข์และบริหารจัดการ", pos: "หัวหน้าฝ่าย" },
+            { id: 48, name: "เอมวิกา ตันตะราวงศา", year: "2567", dept: "ยังไมีมีฝ่าย หรือ เป็น ประธาน เลขา รองประธาน ผู้ช่วยเลขา", pos: "สมาชิกฝ่าย" },
+            { id: 49, name: "นายณัฐพล ดำรงสุสกุล", year: "2567", dept: "ฝ่ายเรื่องราวร้องทุกข์และบริหารจัดการ", pos: "สมาชิกฝ่าย" },
+            { id: 50, name: "น.ส.ณัฐณิชา พรนิติพล", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 51, name: "ด.ญ.ทิพามณี กันทาฝั้น", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 52, name: "นางสาวอาจารียา พาที", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 53, name: "นางสาว ชมพูนุช แก้วไพฑูรย์", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 54, name: "ด. ช. ภูรินทร์ มาตย์นอก", year: "2567", dept: "ฝ่ายกิจกรรมและสถานที่", pos: "สมาชิกฝ่าย" },
+            { id: 55, name: "นาย พงศธร จุลเกษม", year: "2567", dept: "ฝ่ายสอดส่องดูเเลและโสต", pos: "สมาชิกฝ่าย" },
+            { id: 56, name: "อัชฌา เผือกนิมิตร", year: "2567", dept: "ยังไมีมีฝ่าย หรือ เป็น ประธาน เลขา รองประธาน ผู้ช่วยเลขา", pos: "ผู้ช่วยเลขา" },
+            { id: 57, name: "ด.ช. ภูรินทร์ มาตย์นอก", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 58, name: "นส.ปภาวรินท์ เกษศิริ", year: "2567", dept: "ฝ่ายประชาสัมพันธ์", pos: "สมาชิกฝ่าย" },
+            { id: 59, name: "นางสาวอัญชลีกร ธัญญวนิช", year: "2567", dept: "ไม่มีฝ่าย", pos: "สมาชิกฝ่าย" },
+            { id: 60, name: "นางสาวธัญเรศ บุญหลำ", year: "2567", dept: "ไม่มีฝ่าย", pos: "สมาชิกฝ่าย" },
+            { id: 61, name: "นายศักดิ์สิทธิ์ คุณาราช", year: "2567", dept: "ไม่มีฝ่าย", pos: "สมาชิกฝ่าย" },
+            { id: 62, name: "นางสาวบุรพร ชาวทองหลาง", year: "2567", dept: "ไม่มีฝ่าย", pos: "สมาชิกฝ่าย" },
+            { id: 63, name: "นางสาวอาจารียา พาที", year: "2567", dept: "ไม่มีฝ่าย", pos: "สมาชิกฝ่าย" },
+            { id: 64, name: "นายพงศกร จินดา", year: "2567", dept: "คณะกรรมการที่ปรึกษา", pos: "ที่ปรึกษา" },
+            { id: 65, name: "นายศรัณย์ภัทร อุทยาพงษ์", year: "2567", dept: "คณะกรรมการบริหาร", pos: "ประธาน" },
+            { id: 66, name: "นาย กฤตยชญ์ ดาคำพิเศษ", year: "2567", dept: "ไม่มีฝ่าย", pos: "สมาชิกฝ่าย" },
+            { id: 67, name: "นางสาวชนัญชิดา ผันผาย", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 68, name: "นายชญานิน โอ่งเจริญ", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 69, name: "ด.ช.พีรพัฒน์ โฉมสอาด", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 70, name: "นายพรีมพิชชา พรมวงศ์", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 71, name: "ด.ญ.ภัทรานี ทองนำ", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 72, name: "นางสาวภิญญดา ราชเจริญดี", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 73, name: "นายจอนนี่ บุญนาดี", year: "2568", dept: "เต้นร้องประกวด ทูบีนัมเบอร์วันไอดอล", pos: "เบอร์ 1 ของชมรม" },
+            { id: 74, name: "นายผไทเทพ รัตน์เจริญ", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 75, name: "ด.ญ.ศิญาพัฒน์ เนียนทะศาสตร์", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 76, name: "นางสาวสุทธิดา พูลสวัสดิ์", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" },
+            { id: 77, name: "นายอนุวัตร สดุดี", year: "2568", dept: "ไม่พบข้อมูลหรือยังไม่ได้รับการแต่งตั้ง", pos: "-" }
+        ];
+
+        window.onload = function() {
+            renderTable(membersData);
+        };
+
+        function renderTable(data) {
+            const tbody = document.getElementById('memberTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const totalCount = document.getElementById('totalCount');
+            
+            tbody.innerHTML = '';
+            totalCount.innerText = data.length;
+
+            if (data.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            data.forEach((member, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="py-4 px-6 text-center text-xs font-semibold text-slate-400">${index + 1}</td>
+                    <td class="py-4 px-6 font-bold text-brand-blue">${member.name}</td>
+                    <td class="py-4 px-6 text-slate-600 text-xs sm:text-sm">${member.dept}</td>
+                    <td class="py-4 px-6"><span class="bg-blue-50 text-brand-blue px-2.5 py-1 rounded-lg text-xs font-semibold">${member.pos}</span></td>
+                    <td class="py-4 px-6 text-center"><span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-lg text-xs font-bold">${member.year}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Hidden keywords mapping for school and club name searches
+        function handleSearch() {
+            const rawQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            // Hidden keyword triggers
+            const schoolKeywords = [
+                "โรงเรียนเรียนเบญจมราชรังสฤษฎิ์ 2", 
+                "โรงเรียนเบญจมราชรังสฤษฎิ์ ๒", 
+                "to be ben2", 
+                "tobenumberoneben2", 
+                "to be number one ben2"
+            ];
+
+            const isSchoolQuery = schoolKeywords.some(kw => kw.includes(rawQuery) || rawQuery.includes(kw));
+
+            if (isSchoolQuery && rawQuery.length > 2) {
+                // If searched with school keyword, show all records
+                renderTable(membersData);
+                return;
+            }
+
+            const filtered = membersData.filter(m => {
+                return m.name.toLowerCase().includes(rawQuery) || 
+                       m.dept.toLowerCase().includes(rawQuery) || 
+                       m.pos.toLowerCase().includes(rawQuery) || 
+                       m.year.toLowerCase().includes(rawQuery);
+            });
+
+            renderTable(filtered);
+        }
+
+        function switchTab(tab) {
+            const btnMembers = document.getElementById('tabBtnMembers');
+            const btnFiles = document.getElementById('tabBtnFiles');
+            const sectionMembers = document.getElementById('sectionMembers');
+            const sectionFiles = document.getElementById('sectionFiles');
+
+            if (tab === 'members') {
+                btnMembers.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-brand-yellow text-brand-blue shadow transition";
+                btnFiles.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-blue-900/60 text-slate-200 hover:bg-blue-800 transition";
+                sectionMembers.classList.remove('hidden');
+                sectionFiles.classList.add('hidden');
+            } else {
+                btnFiles.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-brand-yellow text-brand-blue shadow transition";
+                btnMembers.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-blue-900/60 text-slate-200 hover:bg-blue-800 transition";
+                sectionFiles.classList.remove('hidden');
+                sectionMembers.classList.add('hidden');
+            }
+        }
+
+        function downloadFile(filename) {
+            showToast(`กำลังดาวน์โหลดไฟล์: ${filename}`);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
